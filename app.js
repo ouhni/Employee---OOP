@@ -32,6 +32,31 @@ class EmployeeUI {
         employeeList.insertAdjacentHTML('afterbegin', markup);               
 
     }
+
+    clearField() {
+    document.querySelector('#nameField').value = '';
+    document.querySelector('#SalaryField').value = '';
+    document.querySelector('#taxField').value = '';
+    }
+
+    alertMessage(messageType, message) {
+        const markup = `<div class="alert alert-${messageType}"
+                        role="alert">${message}</div>`;
+
+        const form = document.querySelector('form');
+        form.insertAdjacentHTML('beforebegin', markup);
+
+        setTimeout(() => {
+            document.querySelector('.alert').remove();
+        }, 2000);
+    }
+
+    deleteEmployee(target) {
+        if(target.matches('.delete')) {
+            target.parentElement.parentElement.remove();
+        }
+    }
+
 }
 
 const addEmployeeButton = document.querySelector('#add_employee');
@@ -40,8 +65,10 @@ addEmployeeButton.addEventListener('click', e => {
     const salary = document.querySelector('#SalaryField').value;
     const tax = document.querySelector('#taxField').value;
 
+    const employeeUi = new EmployeeUI();
+
     if(name === '' || salary === '' || tax === '') {
-        alert('Please complete the form.');
+        employeeUi.alertMessage('danger', 'Please complete the form.');
     } else {
         const employee = new Employee(name, salary, tax);
 
@@ -49,11 +76,18 @@ addEmployeeButton.addEventListener('click', e => {
         employee.id = employee.generateId();
         employee.netSalary = employee.calculateSalary();
 
-        const employeeUi = new EmployeeUI();
         employeeUi.addEmployee(employee);
+        employeeUi.alertMessage('success', 'Employee is added successfully!');
+        employeeUi.clearField();
 
     }
 });
+
+document.querySelector('tbody').addEventListener('click', e => {
+    const employeeUi = new EmployeeUI;
+    
+    employeeUi.deleteEmployee(e.target);
+})
 
 document.querySelector('form').addEventListener('submit', e => {
     e.preventDefault();
