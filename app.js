@@ -59,6 +59,37 @@ class EmployeeUI {
 
 }
 
+class StoreEmployee {
+    static getEmployees() {
+        let employees;
+
+        if(localStorage.getItem('employees') === null) {
+            employees = [];
+        } else {
+            employees = JSON.parse(localStorage.getItem('employees'));
+        }
+
+        return employees;
+    }
+
+    static displayEmployees() {
+        const employees = StoreEmployee.getEmployees();
+        const employeeUi = new EmployeeUI();
+
+        employees.forEach(employee => {
+            employeeUi.addEmployee(employee);
+        });
+    }
+
+    static addEmployee(employee) {
+        const employees = StoreEmployee.getEmployees();
+
+        employees.push(employee);
+
+        localStorage.setItem('employees', JSON.stringify(employees));
+    }
+}
+
 const addEmployeeButton = document.querySelector('#add_employee');
 addEmployeeButton.addEventListener('click', e => {
     const name = document.querySelector('#nameField').value;
@@ -77,6 +108,9 @@ addEmployeeButton.addEventListener('click', e => {
         employee.netSalary = employee.calculateSalary();
 
         employeeUi.addEmployee(employee);
+
+        StoreEmployee.addEmployee(employee);
+
         employeeUi.alertMessage('success', 'Employee is added successfully!');
         employeeUi.clearField();
 
@@ -93,3 +127,4 @@ document.querySelector('form').addEventListener('submit', e => {
     e.preventDefault();
 })
 
+StoreEmployee.displayEmployees();
